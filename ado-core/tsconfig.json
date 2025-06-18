@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "outDir": "dist",
+    "types": ["node", "chai", "mocha"],
+    "resolveJsonModule": true
+  },
+  "include": ["./hardhat.config.ts", "./test", "./scripts", "./contracts"]
+}
