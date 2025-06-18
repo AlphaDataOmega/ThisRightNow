@@ -14,4 +14,9 @@ contract TRNUsageOracle {
     function getAvailableTRN(address account) external view returns (uint256) {
         return balances[account];
     }
+
+    // Alias used in tests
+    function earnedTRN(address account) external view returns (uint256) {
+        return balances[account];
+    }
 }
