@@ -73,6 +73,101 @@ export default function Dashboard() {
     });
   }, [address]);
 
+  async function handleClaimAll() {
+    const walletClient = await import("viem/wagmi").then((m) => m.getWalletClient());
+    const publicClient = await import("viem/wagmi").then((m) => m.getPublicClient());
+
+    if (!address || !walletClient) return;
+
+    const actions: { type: string; tx: any }[] = [];
+
+    // 1. Merkle
+    const entry = Object.entries((merkleData as any).claims).find(
+      ([key]) => key.toLowerCase() === address.toLowerCase()
+    );
+    if (entry) {
+      const [addr, claim]: any = entry;
+      actions.push({
+        type: "merkle",
+        tx: {
+          address: DASHBOARD_CONTRACTS.merkle,
+          abi: merkleAbi,
+          functionName: "claim",
+          args: [addr, claim.index, claim.amount, claim.proof],
+        },
+      });
+    }
+
+    // 2. Investor
+    const investorNFTIds: number[] = [];
+    for (let i = 0; i < 100; i++) {
+      try {
+        const amt = await readContract({
+          address: DASHBOARD_CONTRACTS.investor,
+          abi: investorAbi,
+          functionName: "pendingClaim",
+          args: [i],
+        });
+        if (amt > 0n) {
+          investorNFTIds.push(i);
+        }
+      } catch {}
+    }
+
+    for (const tokenId of investorNFTIds) {
+      actions.push({
+        type: "investor",
+        tx: {
+          address: DASHBOARD_CONTRACTS.investor,
+          abi: investorAbi,
+          functionName: "claim",
+          args: [tokenId],
+        },
+      });
+    }
+
+    // 3. Contributor
+    const contributorNFTIds: number[] = [];
+    for (let i = 0; i < 100; i++) {
+      try {
+        const amt = await readContract({
+          address: DASHBOARD_CONTRACTS.contributor,
+          abi: contributorAbi,
+          functionName: "pendingClaim",
+          args: [i],
+        });
+        if (amt > 0n) {
+          contributorNFTIds.push(i);
+        }
+      } catch {}
+    }
+
+    for (const tokenId of contributorNFTIds) {
+      actions.push({
+        type: "contributor",
+        tx: {
+          address: DASHBOARD_CONTRACTS.contributor,
+          abi: contributorAbi,
+          functionName: "claim",
+          args: [tokenId],
+        },
+      });
+    }
+
+    // Execute all
+    for (const { type, tx } of actions) {
+      try {
+        const hash = await writeContract(tx as any);
+        console.log(`✅ Claimed from ${type}:`, hash);
+        // await publicClient.waitForTransactionReceipt({ hash });
+      } catch (err) {
+        console.warn(`❌ Failed ${type}:`, err);
+      }
+    }
+
+    alert("Claim All completed. Check your wallet!");
+  }
+
   return (
     <div className="p-6 space-y-4">
       <h1 className="text-2xl font-bold">TRN Earnings Dashboard</h1>
@@ -117,6 +212,13 @@ export default function Dashboard() {
               ))}
             </div>
           )}
+
+          <button
+            className="px-4 py-2 bg-green-700 text-white rounded mt-4"
+            onClick={handleClaimAll}
+          >
+            Claim All
+          </button>
         </>
       )}
     </div>
