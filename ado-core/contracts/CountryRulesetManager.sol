@@ -10,7 +10,7 @@ contract CountryRulesetManager {
         }
     }
 
-    function isBlocked(string calldata country, string calldata category) external view returns (bool) {
-        return policies[country][category];
+    function isCategoryBanned(string calldata countryCode, string calldata category) external view returns (bool) {
+        return policies[countryCode][category];
     }
 }

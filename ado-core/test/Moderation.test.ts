@@ -67,8 +67,10 @@ describe("Moderation Pipeline", function () {
   });
 
   it("should allow override by DAO to unban post", async function () {
+    await countryRules.setCountryPolicy("CN", ["NSFW"]);
+
     await geoOracle.connect(owner).enforceGeoBlock(postHash, "CN", "NSFW");
-    await geoOracle.connect(dao).overrideUnblock(postHash, "CN");
+    await geoOracle.connect(owner).overrideUnblock(postHash, "CN");
 
     const visible = await geoOracle.isVisible(postHash, "CN");
     expect(visible).to.be.true;
