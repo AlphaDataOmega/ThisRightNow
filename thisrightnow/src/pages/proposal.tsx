@@ -113,6 +113,22 @@ export default function ProposalPage() {
     }
   }
 
+  async function execute(id: number) {
+    try {
+      await writeContract({
+        address: CONTRACTS.proposalFactory,
+        abi: factoryAbi as any,
+        functionName: "executeProposal",
+        args: [id],
+      });
+
+      alert("Proposal executed");
+    } catch (err) {
+      console.warn("Execution failed", err);
+      alert("Execution error. Check calldata or permissions.");
+    }
+  }
+
   return (
     <div className="p-4">
       <h1 className="text-xl font-bold mb-4">DAO Proposals</h1>
@@ -133,6 +149,16 @@ export default function ProposalPage() {
             <div className="mt-2 space-x-2">
               <button className="bg-blue-600 text-white px-3 py-1 rounded" onClick={() => finalize(p.id, true)}>Approve</button>
               <button className="bg-gray-800 text-white px-3 py-1 rounded" onClick={() => finalize(p.id, false)}>Veto</button>
+            </div>
+          )}
+          {master && p.status === "ReadyForExecution" && (
+            <div className="mt-2">
+              <button
+                className="bg-purple-700 text-white px-4 py-1 rounded"
+                onClick={() => execute(p.id)}
+              >
+                Execute Proposal
+              </button>
             </div>
           )}
         </div>
