@@ -1,0 +1,26 @@
+{
+  "0xUserA": {
+    "address": "0xUserA",
+    "score": 0.6100000000000001,
+    "details": {
+      "blessRate": 1.6,
+      "burnRate": 0.4,
+      "retrnRate": 0.5,
+      "geoPenalty": 0.05,
+      "aiPenalty": 0.2,
+      "ageBonus": 0.2
+    }
+  },
+  "0xUserB": {
+    "address": "0xUserB",
+    "score": 0,
+    "details": {
+      "blessRate": 0.6666666666666666,
+      "burnRate": 2,
+      "retrnRate": 0.06666666666666667,
+      "geoPenalty": 0.25,
+      "aiPenalty": 1,
+      "ageBonus": 0.01643835616438356
+    }
+  }
+}
