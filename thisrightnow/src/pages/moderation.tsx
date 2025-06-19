@@ -74,6 +74,9 @@ export default function ModerationDashboard() {
   return (
     <div className="p-4 space-y-4">
       <h1 className="text-2xl font-bold">Moderation Dashboard</h1>
+      <a href="/moderation/appeals" className="text-blue-600 underline">
+        View Appeals Queue
+      </a>
       {loading ? <p>Loading...</p> : (
         flaggedPostHashes.map(postHash => (
           <div key={postHash} className="border rounded p-4">
