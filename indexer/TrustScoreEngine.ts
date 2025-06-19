@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import appeals from "../thisrightnow/src/data/appeals.json";
 
 export type ContributorStats = {
   blessings: number;
@@ -24,6 +25,38 @@ export type TrustScore = {
     ageBonus: number;
   };
 };
+
+type Appeal = {
+  submitter: string;
+  resolution: string;
+  reason?: string;
+};
+
+type TrustAdjustmentMap = Record<string, number>;
+
+function generateAppealAdjustments(): TrustAdjustmentMap {
+  const trust: TrustAdjustmentMap = {};
+
+  (appeals as Appeal[]).forEach((a) => {
+    if (!a.submitter || !a.resolution) return;
+    const addr = a.submitter.toLowerCase();
+    if (!trust[addr]) trust[addr] = 0;
+
+    if (a.resolution === "Approved") {
+      let delta = 10;
+      if (a.reason === "GeoBlock") delta = 5;
+      else if (a.reason === "AIFlag") delta = 15;
+      else if (a.reason === "PostBurned") delta = 10;
+      else if (a.reason === "MisTag") delta = 8;
+
+      trust[addr] += delta;
+    } else if (a.resolution === "Denied") {
+      trust[addr] -= 1;
+    }
+  });
+
+  return trust;
+}
 
 // Dummy mock data – replace with real event/indexer data
 const mockContributorData: Record<string, ContributorStats> = {
@@ -92,6 +125,31 @@ function buildTrustIndex() {
 
   for (const [addr, stats] of Object.entries(mockContributorData)) {
     index[addr] = computeTrustScore(addr, stats);
+  }
+
+  const adjustments = generateAppealAdjustments();
+  const dateStr = new Date().toISOString().slice(0, 10);
+  const adjustPath = path.join(__dirname, "..", "trust", `appealAdjustments-${dateStr}.json`);
+  fs.mkdirSync(path.dirname(adjustPath), { recursive: true });
+  fs.writeFileSync(adjustPath, JSON.stringify(adjustments, null, 2));
+  console.log(`✅ Appeal adjustments written to ${adjustPath}`);
+
+  for (const [addr, delta] of Object.entries(adjustments)) {
+    if (!index[addr]) {
+      index[addr] = {
+        address: addr,
+        score: 0.5,
+        details: {
+          blessRate: 0,
+          burnRate: 0,
+          retrnRate: 0,
+          geoPenalty: 0,
+          aiPenalty: 0,
+          ageBonus: 0,
+        },
+      };
+    }
+    index[addr].score = Math.max(0, Math.min(1, index[addr].score + delta / 100));
   }
 
   const outputPath = path.join(__dirname, "output", "trustIndex.json");
