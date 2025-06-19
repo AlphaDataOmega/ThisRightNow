@@ -1,0 +1,5 @@
+{
+  "0xabc123": ["HateSpeech"],
+  "0xdef456": ["Crypto", "Spam"],
+  "0xghi789": ["MedicalMisinformation", "NSFW"]
+}

@@ -1,0 +1,14 @@
+{
+  "0xabc123": {
+    "author": "0xAuthorA",
+    "tags": ["HateSpeech"]
+  },
+  "0xdef456": {
+    "author": "0xAuthorB",
+    "tags": ["Crypto"]
+  },
+  "0xghi789": {
+    "author": "0xAuthorA",
+    "tags": ["None"]
+  }
+}
