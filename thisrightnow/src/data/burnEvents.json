@@ -1,0 +1,16 @@
+[
+  {
+    "postHash": "0xabc123",
+    "country": "IR",
+    "category": "NSFW",
+    "reason": "GeoBan",
+    "timestamp": 1718700000
+  },
+  {
+    "postHash": "0xdef456",
+    "country": "US",
+    "category": "Spam",
+    "reason": "AIFlag",
+    "timestamp": 1718700100
+  }
+]
