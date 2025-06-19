@@ -1,10 +1,14 @@
 import { useAccount } from "wagmi";
 import { readContract, writeContract } from "viem/wagmi";
+import { decodeFunctionData } from "viem";
 import { useEffect, useState } from "react";
 
 import factoryAbi from "@/abi/ProposalFactory.json";
 import councilAbi from "@/abi/CouncilNFT.json";
 import masterAbi from "@/abi/MasterNFT.json";
+import oracleAbi from "@/abi/TRNUsageOracle.json";
+import investorAbi from "@/abi/MockInvestorVault.json";
+import contributorAbi from "@/abi/MockContributorVault.json";
 
 const CONTRACTS = {
   proposalFactory: "0xPROPOSAL_FACTORY",
@@ -12,11 +16,31 @@ const CONTRACTS = {
   masterNFT: "0xMASTER_NFT",
 };
 
+const ABI_REGISTRY: Record<string, any> = {
+  "0xORACLE_ADDRESS_HERE".toLowerCase(): oracleAbi,
+  "0xINVESTOR_VAULT_ADDRESS".toLowerCase(): investorAbi,
+  "0xCONTRIBUTOR_VAULT_ADDRESS".toLowerCase(): contributorAbi,
+};
+
+function decodeProposal(target: string, data: `0x${string}`) {
+  const abi = ABI_REGISTRY[target.toLowerCase()];
+  if (!abi) return { error: "ABI not found" } as const;
+
+  try {
+    const decoded = decodeFunctionData({ abi, data });
+    return { functionName: decoded.functionName, args: decoded.args } as const;
+  } catch {
+    return { error: "Failed to decode" } as const;
+  }
+}
+
 type Proposal = {
   id: number;
   description: string;
   yesVotes: bigint;
   noVotes: bigint;
+  target: string;
+  calldata: string;
   status: string;
 };
 
@@ -56,8 +80,10 @@ export default function ProposalPage() {
         results.push({
           id: i,
           description: p[0],
-          yesVotes: p[1],
-          noVotes: p[2],
+          yesVotes: p[3] ?? p[1],
+          noVotes: p[4] ?? p[2],
+          target: p[1] ?? "0x",
+          calldata: p[2] ?? "0x",
           status,
         });
       }
@@ -135,6 +161,22 @@ export default function ProposalPage() {
       {proposals.map((p) => (
         <div key={p.id} className="border rounded p-3 mb-4">
           <div className="text-md font-semibold">{p.description}</div>
+          {p.calldata && (
+            (() => {
+              const decoded = decodeProposal(p.target, p.calldata as `0x${string}`);
+              return !("error" in decoded) ? (
+                <div className="text-xs mt-2">
+                  <b>Target:</b> {p.target}
+                  <br />
+                  <b>Function:</b> {decoded.functionName}
+                  <br />
+                  <b>Params:</b> {JSON.stringify(decoded.args)}
+                </div>
+              ) : (
+                <div className="text-xs text-red-500 mt-2">{decoded.error}</div>
+              );
+            })()
+          )}
           <div className="text-sm mt-2">
             ✅ Yes: {p.yesVotes.toString()} | ❌ No: {p.noVotes.toString()}<br />
             Status: <b>{p.status}</b>

@@ -9,6 +9,8 @@ export interface Proposal {
   description: string;
   yesVotes: bigint;
   noVotes: bigint;
+  target: string;
+  calldata: string;
   executed: boolean;
   vetoed: boolean;
 }
@@ -35,7 +37,17 @@ export function useProposalData() {
               functionName: "getProposal",
               args: [BigInt(i)],
             });
-            items.push({ id: i, ...(data as any) });
+
+            items.push({
+              id: i,
+              description: data[0],
+              target: data[1] ?? "0x",
+              calldata: data[2] ?? "0x",
+              yesVotes: data[3] ?? data[1],
+              noVotes: data[4] ?? data[2],
+              executed: data[5] ?? false,
+              vetoed: data[6] ?? false,
+            } as any);
           } catch (err) {
             console.warn("Failed to fetch proposal", i, err);
           }
