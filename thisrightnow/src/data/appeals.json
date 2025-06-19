@@ -1,0 +1,5 @@
+[
+  { "id": 1, "resolution": "Approved", "timestamp": 1718700200 },
+  { "id": 2, "resolution": "Denied", "timestamp": 1718700300 },
+  { "id": 3, "resolution": "Approved", "timestamp": 1718700400 }
+]
