@@ -20,6 +20,7 @@ describe("Moderation Pipeline", function () {
 
     const FlagEscalator = await ethers.getContractFactory("FlagEscalator");
     flagEscalator = await FlagEscalator.deploy(moderationLog.target);
+    await flagEscalator.setAI(aiAgent.address);
 
     const BurnRegistry = await ethers.getContractFactory("BurnRegistry");
     burnRegistry = await BurnRegistry.deploy(moderationLog.target);
@@ -34,7 +35,13 @@ describe("Moderation Pipeline", function () {
   it("should flag and escalate a post via user burns", async function () {
     await flagEscalator.connect(user1).burnFlag(postHash);
     await flagEscalator.connect(user2).burnFlag(postHash);
+    await flagEscalator.connect(owner).burnFlag(postHash);
 
+    const flagged = await flagEscalator.isEscalated(postHash);
+    expect(flagged).to.be.true;
+  });
+
+  it("should escalate directly via AI agent", async function () {
     await flagEscalator.connect(aiAgent).aiEscalate(postHash);
 
     const flagged = await flagEscalator.isEscalated(postHash);
