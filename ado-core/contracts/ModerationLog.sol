@@ -2,18 +2,44 @@
 pragma solidity ^0.8.24;
 
 contract ModerationLog {
-    struct Entry {
-        string action;
+    enum ActionType { None, Burned, Flagged, Blocked, Unblocked, Escalated }
+
+    struct ModerationEntry {
+        ActionType action;
         string reason;
+        address actor;
+        uint256 timestamp;
     }
 
-    mapping(bytes32 => Entry) public logs;
+    mapping(bytes32 => ModerationEntry[]) public postLogs;
 
-    function log(bytes32 postHash, string calldata action, string calldata reason) external {
-        logs[postHash] = Entry(action, reason);
+    event ModerationEvent(bytes32 indexed postHash, ActionType action, string reason, address actor);
+
+    modifier validAction(ActionType action) {
+        require(action != ActionType.None, "Invalid action");
+        _;
     }
 
-    function getPostModerationLog(bytes32 postHash) external view returns (Entry memory) {
-        return logs[postHash];
+    function logAction(bytes32 postHash, ActionType action, string calldata reason) external validAction(action) {
+        ModerationEntry memory entry = ModerationEntry({
+            action: action,
+            reason: reason,
+            actor: msg.sender,
+            timestamp: block.timestamp
+        });
+
+        postLogs[postHash].push(entry);
+
+        emit ModerationEvent(postHash, action, reason, msg.sender);
+    }
+
+    function getLatestAction(bytes32 postHash) external view returns (ModerationEntry memory) {
+        ModerationEntry[] storage logs = postLogs[postHash];
+        require(logs.length > 0, "No logs for post");
+        return logs[logs.length - 1];
+    }
+
+    function getAllActions(bytes32 postHash) external view returns (ModerationEntry[] memory) {
+        return postLogs[postHash];
     }
 }
