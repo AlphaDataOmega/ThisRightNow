@@ -24,6 +24,7 @@ describe("Moderation Pipeline", function () {
 
     const BurnRegistry = await ethers.getContractFactory("BurnRegistry");
     burnRegistry = await BurnRegistry.deploy(moderationLog.target);
+    await burnRegistry.setDAO(dao.address);
 
     const CountryRulesetManager = await ethers.getContractFactory("CountryRulesetManager");
     countryRules = await CountryRulesetManager.deploy();
