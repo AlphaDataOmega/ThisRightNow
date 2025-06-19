@@ -1,8 +1,13 @@
 import { useState } from "react";
 import { useAccount } from "wagmi";
+import { loadContract } from "@/utils/contract";
+import { ethers } from "ethers";
+import ModerationLogABI from "@/abi/ModerationLog.json";
 
 export default function AppealForm() {
   const { address, isConnected } = useAccount();
+
+  const MODERATION_LOG = import.meta.env.VITE_MODERATION_LOG;
 
   const [postHash, setPostHash] = useState("");
   const [reason, setReason] = useState("GeoBlock");
@@ -10,7 +15,19 @@ export default function AppealForm() {
   const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = async () => {
-    // Replace with actual backend or indexer logic
+    const provider = new ethers.BrowserProvider((window as any).ethereum);
+    const signer = await provider.getSigner();
+    const moderationLogContract = await loadContract(
+      MODERATION_LOG,
+      ModerationLogABI as any,
+      signer
+    );
+
+    await moderationLogContract.submitAppeal(
+      ethers.keccak256(ethers.toUtf8Bytes(postHash)),
+      0
+    );
+
     const appeal = {
       address,
       postHash,
