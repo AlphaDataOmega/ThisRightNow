@@ -1,0 +1,32 @@
+[
+  {
+    "moderator": "0xabc",
+    "count": 3,
+    "approves": 1,
+    "denies": 1,
+    "escalates": 1,
+    "avgResolutionTime": 303.3333333333333,
+    "fairness": -6,
+    "verified": true
+  },
+  {
+    "moderator": "0xdef",
+    "count": 2,
+    "approves": 0,
+    "denies": 2,
+    "escalates": 0,
+    "avgResolutionTime": 270,
+    "fairness": -8,
+    "verified": false
+  },
+  {
+    "moderator": "0xghi",
+    "count": 1,
+    "approves": 1,
+    "denies": 0,
+    "escalates": 0,
+    "avgResolutionTime": 450,
+    "fairness": 2,
+    "verified": true
+  }
+]
