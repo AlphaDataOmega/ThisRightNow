@@ -44,8 +44,8 @@ describe("Moderation Pipeline", function () {
   it("should allow DAO to burn the post and log it", async function () {
     await burnRegistry.connect(dao).burnPost(postHash, "Hate speech");
 
-    const log = await moderationLog.getPostModerationLog(postHash);
-    expect(log.action).to.equal("Burned");
+    const log = await moderationLog.getLatestAction(postHash);
+    expect(log.action).to.equal(1); // ActionType.Burned
     expect(log.reason).to.equal("Hate speech");
   });
 

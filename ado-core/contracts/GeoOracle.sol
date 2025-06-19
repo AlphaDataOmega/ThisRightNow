@@ -6,7 +6,8 @@ interface ICountryRulesetManager {
 }
 
 interface IModerationLog {
-    function log(bytes32 postHash, string calldata action, string calldata reason) external;
+    enum ActionType { None, Burned, Flagged, Blocked, Unblocked, Escalated }
+    function logAction(bytes32 postHash, ActionType action, string calldata reason) external;
 }
 
 contract GeoOracle {
@@ -22,7 +23,7 @@ contract GeoOracle {
 
     function enforceGeoBlock(bytes32 postHash, string calldata country, string calldata category) external {
         blocked[postHash][country] = true;
-        IModerationLog(moderationLog).log(postHash, "Blocked", category);
+        IModerationLog(moderationLog).logAction(postHash, IModerationLog.ActionType.Blocked, category);
     }
 
     function isVisible(bytes32 postHash, string calldata country) external view returns (bool) {
@@ -31,6 +32,6 @@ contract GeoOracle {
 
     function overrideUnblock(bytes32 postHash, string calldata country) external {
         blocked[postHash][country] = false;
-        IModerationLog(moderationLog).log(postHash, "Unblocked", country);
+        IModerationLog(moderationLog).logAction(postHash, IModerationLog.ActionType.Unblocked, country);
     }
 }

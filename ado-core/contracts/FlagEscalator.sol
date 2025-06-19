@@ -2,7 +2,8 @@
 pragma solidity ^0.8.24;
 
 interface IModerationLog {
-    function log(bytes32 postHash, string calldata action, string calldata reason) external;
+    enum ActionType { None, Burned, Flagged, Blocked, Unblocked, Escalated }
+    function logAction(bytes32 postHash, ActionType action, string calldata reason) external;
 }
 
 contract FlagEscalator {
@@ -22,7 +23,7 @@ contract FlagEscalator {
     function aiEscalate(bytes32 postHash) external {
         require(burnCount[postHash] >= 2, "Not enough burns");
         escalated[postHash] = true;
-        IModerationLog(moderationLog).log(postHash, "Escalated", "");
+        IModerationLog(moderationLog).logAction(postHash, IModerationLog.ActionType.Escalated, "");
     }
 
     function isEscalated(bytes32 postHash) external view returns (bool) {
