@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
+import { loadContract } from "@/utils/contract";
+import { ethers } from "ethers";
+import ModerationLogABI from "@/abi/ModerationLog.json";
 
 type Appeal = {
   address: string;
@@ -12,6 +15,7 @@ type Appeal = {
 export default function AppealsQueue() {
   const [appeals, setAppeals] = useState<Appeal[]>([]);
   const [filter, setFilter] = useState("All");
+  const MODERATION_LOG = import.meta.env.VITE_MODERATION_LOG;
 
   useEffect(() => {
     // Replace this with a backend or indexer query later
@@ -24,9 +28,21 @@ export default function AppealsQueue() {
 
   const filtered = filter === "All" ? appeals : appeals.filter((a) => a.reason === filter);
 
-  const handleAction = (postHash: string, action: string) => {
-    alert(`🚨 ${action} for ${postHash} (placeholder)`);
-    // Add mutation logic later (write to log, unflag, etc.)
+  const handleAction = async (appealId: number, postHash: string, action: string) => {
+    const provider = new ethers.BrowserProvider((window as any).ethereum);
+    const signer = await provider.getSigner();
+    const moderationLogContract = await loadContract(
+      MODERATION_LOG,
+      ModerationLogABI as any,
+      signer
+    );
+
+    let resolution = 1; // Approved
+    if (action === "Reject") resolution = 2;
+    if (action === "Escalate") resolution = 3;
+
+    await moderationLogContract.resolveAppeal(appealId, resolution);
+    alert(`🚨 ${action} for ${postHash}`);
   };
 
   return (
@@ -61,19 +77,19 @@ export default function AppealsQueue() {
             <div className="mt-4 space-x-2">
               <button
                 className="bg-green-600 text-white px-3 py-1 rounded"
-                onClick={() => handleAction(a.postHash, "Approve")}
+                onClick={() => handleAction(i, a.postHash, "Approve")}
               >
                 ✅ Approve
               </button>
               <button
                 className="bg-red-600 text-white px-3 py-1 rounded"
-                onClick={() => handleAction(a.postHash, "Reject")}
+                onClick={() => handleAction(i, a.postHash, "Reject")}
               >
                 ❌ Reject
               </button>
               <button
                 className="bg-yellow-500 text-white px-3 py-1 rounded"
-                onClick={() => handleAction(a.postHash, "Escalate")}
+                onClick={() => handleAction(i, a.postHash, "Escalate")}
               >
                 ⚠️ Escalate
               </button>
