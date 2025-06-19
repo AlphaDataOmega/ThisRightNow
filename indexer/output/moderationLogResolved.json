@@ -1,0 +1,8 @@
+[
+  { "id": 1, "moderator": "0xabc", "resolution": "Approved", "timestamp": 1718700200, "submittedAt": 1718700100, "overruled": false },
+  { "id": 2, "moderator": "0xdef", "resolution": "Denied", "timestamp": 1718700300, "submittedAt": 1718700120, "overruled": true },
+  { "id": 3, "moderator": "0xabc", "resolution": "Escalated", "timestamp": 1718700400, "submittedAt": 1718700130, "overruled": false },
+  { "id": 4, "moderator": "0xdef", "resolution": "Denied", "timestamp": 1718700500, "submittedAt": 1718700140, "overruled": false },
+  { "id": 5, "moderator": "0xghi", "resolution": "Approved", "timestamp": 1718700600, "submittedAt": 1718700150, "overruled": false },
+  { "id": 6, "moderator": "0xabc", "resolution": "Denied", "timestamp": 1718700700, "submittedAt": 1718700160, "overruled": true }
+]
