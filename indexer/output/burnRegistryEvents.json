@@ -1,0 +1,26 @@
+[
+  {
+    "postHash": "0xabc123",
+    "flagger": "0xUser1",
+    "timestamp": 1718700111,
+    "reason": "HateSpeech"
+  },
+  {
+    "postHash": "0xabc123",
+    "flagger": "0xBot44",
+    "timestamp": 1718700114,
+    "reason": "Spam"
+  },
+  {
+    "postHash": "0xabc123",
+    "flagger": "0xSemanticAI",
+    "timestamp": 1718700120,
+    "reason": "PolicyViolation"
+  },
+  {
+    "postHash": "0xdef456",
+    "flagger": "0x000000000000000000000000000000000000DA0",
+    "timestamp": 1718700200,
+    "reason": "EmergencyModeration"
+  }
+]
