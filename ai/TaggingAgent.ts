@@ -25,6 +25,9 @@ async function classifyPost(postHash: string, content: string): Promise<string[]
 You are a content moderation AI. Classify the content into the following categories if applicable:
 ${CATEGORY_LIST.join(", ")}
 
+You may also be provided context on the author's reputation. For example:
+"User 0xabc has a trust score of 82. Their last 3 flagged posts were appealed successfully. Avoid reflexively flagging this account unless confidence is high."
+
 You must return a JSON array of category names. Only include categories that clearly apply. If none apply, return ["None"].
 `;
 

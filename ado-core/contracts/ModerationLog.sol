@@ -31,6 +31,7 @@ contract ModerationLog {
     event ModerationEvent(bytes32 indexed postHash, ActionType action, string reason, address actor);
     event AppealSubmitted(uint256 indexed id, address indexed submitter, bytes32 indexed postHash, AppealReason reason);
     event AppealResolved(uint256 indexed id, address indexed moderator, AppealResolution resolution);
+    event TrustAdjustment(address indexed user, int256 delta, string reason);
 
     modifier validAction(ActionType action) {
         require(action != ActionType.None, "Invalid action");
@@ -86,6 +87,21 @@ contract ModerationLog {
         a.resolution = resolution;
 
         emit AppealResolved(id, msg.sender, resolution);
+
+        int256 delta = 0;
+        if (resolution == AppealResolution.Approved) {
+            if (a.reason == AppealReason.GeoBlock) delta = 5;
+            else if (a.reason == AppealReason.AIFlag) delta = 15;
+            else if (a.reason == AppealReason.PostBurned) delta = 10;
+            else if (a.reason == AppealReason.MisTag) delta = 8;
+        } else if (resolution == AppealResolution.Denied) {
+            delta = -1;
+        }
+
+        if (delta != 0) {
+            string memory reasonStr = resolution == AppealResolution.Approved ? "AppealApproved" : "AppealDenied";
+            emit TrustAdjustment(a.submitter, delta, reasonStr);
+        }
     }
 
     function getAppeal(uint256 id) external view returns (Appeal memory) {

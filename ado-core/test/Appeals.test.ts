@@ -25,7 +25,9 @@ describe("Moderation Appeals", function () {
     expect(initial.postHash).to.equal(postHash);
     expect(initial.resolution).to.equal(0); // AppealResolution.None
 
-    await log.connect(moderator).resolveAppeal(0, 1); // Approved
+    await expect(log.connect(moderator).resolveAppeal(0, 1))
+      .to.emit(log, "TrustAdjustment")
+      .withArgs(user.address, 5, "AppealApproved");
 
     const resolved = await log.getAppeal(0);
     expect(resolved.moderator).to.equal(moderator.address);
