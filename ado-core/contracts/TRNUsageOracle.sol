@@ -4,9 +4,11 @@ pragma solidity ^0.8.24;
 contract TRNUsageOracle {
     mapping(address => int256) private balances;
     mapping(address => int256) private debts;
+    mapping(address => uint256) public boostRefunds;
 
     event EarningReported(address indexed account, uint256 amount, bytes32 postHash);
     event UsageReported(address indexed account, uint256 amount, bytes32 reason);
+    event BoostRefunded(address indexed user, uint256 amount);
 
     function reportEarning(address account, uint256 amount, bytes32 postHash) external {
         balances[account] += int256(amount);
@@ -25,6 +27,12 @@ contract TRNUsageOracle {
         balances[user] -= int256(amount);
         debts[user] += int256(amount);
         emit UsageReported(user, amount, reason);
+    }
+
+    function recordBoostRefund(address user, uint256 amount) external {
+        boostRefunds[user] += amount;
+        balances[user] += int256(amount);
+        emit BoostRefunded(user, amount);
     }
 
     function hasDebt(address user) external view returns (bool) {

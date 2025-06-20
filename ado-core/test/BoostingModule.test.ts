@@ -13,14 +13,16 @@ describe("BoostingModule", function () {
     oracle = await Oracle.deploy();
 
     const Boosting = await ethers.getContractFactory("BoostingModule");
-    boost = await Boosting.deploy();
+    boost = await Boosting.deploy(oracle.target);
   });
 
   it("should start a boost campaign", async () => {
     const postHash = ethers.keccak256(ethers.toUtf8Bytes("boostPost"));
 
     const amount = 30; // Simulated 3x cost
-    await boost.connect(booster).startBoost(postHash, amount);
+    await boost
+      .connect(booster)
+      ["startBoost(bytes32,uint256)"](postHash, amount);
 
     const boostData = await boost.getBoost(postHash);
     expect(boostData.booster).to.equal(booster.address);
@@ -32,7 +34,9 @@ describe("BoostingModule", function () {
     const postHash = ethers.keccak256(ethers.toUtf8Bytes("boostPost"));
     const amount = 90;
 
-    await boost.connect(booster).startBoost(postHash, amount);
+    await boost
+      .connect(booster)
+      ["startBoost(bytes32,uint256)"](postHash, amount);
     await boost.endBoost(postHash);
 
     const boostData = await boost.getBoost(postHash);
@@ -45,7 +49,9 @@ describe("BoostingModule", function () {
     const postHash = ethers.keccak256(ethers.toUtf8Bytes("burnedBoost"));
     const spent = 60;
 
-    await boost.connect(booster).startBoost(postHash, spent);
+    await boost
+      .connect(booster)
+      ["startBoost(bytes32,uint256)"](postHash, spent);
     await boost.endBoost(postHash);
 
     // Simulate refund: oracle removes debt
