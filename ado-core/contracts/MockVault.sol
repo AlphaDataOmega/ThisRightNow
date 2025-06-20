@@ -5,6 +5,10 @@ interface IMerkleDistributor {
     function receiveFunds(uint256 amount) external;
 }
 
+interface ITRNUsageOracle {
+    function reportEarning(address user, uint256 amount, bytes32 source) external;
+}
+
 contract MockVault {
     address public oracle;
     uint256 public balance;
@@ -15,6 +19,16 @@ contract MockVault {
 
     function setBalance(uint256 amount) external {
         balance = amount;
+    }
+
+    function receiveRevenue(uint256 amount) external {
+        balance += amount;
+    }
+
+    function claim() external {
+        uint256 amount = balance;
+        balance = 0;
+        ITRNUsageOracle(oracle).reportEarning(msg.sender, amount, keccak256("vault-claim"));
     }
 
     function fundDistributor(address distributor, uint256 amount) external {
