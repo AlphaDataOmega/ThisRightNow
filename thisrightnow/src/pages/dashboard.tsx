@@ -6,6 +6,7 @@ import merkleAbi from "@/abi/MerkleDropDistributor.json";
 import investorAbi from "@/abi/MockInvestorVault.json";
 import contributorAbi from "@/abi/MockContributorVault.json";
 import merkleData from "@/data/merkle-2025-06-18.json";
+import weighted from "@/data/trustWeightedRetrns.json";
 
 const DASHBOARD_CONTRACTS = {
   oracle: "0xORACLE_ADDRESS_HERE",
@@ -20,6 +21,9 @@ export default function Dashboard() {
   const [merkleAmount, setMerkleAmount] = useState<bigint | null>(null);
   const [investorClaims, setInvestorClaims] = useState<bigint[]>([]);
   const [contributorClaims, setContributorClaims] = useState<bigint[]>([]);
+  const reachEntries = Object.entries(weighted as Record<string, number>)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5);
 
   useEffect(() => {
     if (!address) return;
@@ -171,6 +175,16 @@ export default function Dashboard() {
   return (
     <div className="p-6 space-y-4">
       <h1 className="text-2xl font-bold">TRN Earnings Dashboard</h1>
+      <div className="text-sm">
+        <strong>Top Retrned Posts (trust-weighted):</strong>
+        <ul className="list-disc list-inside">
+          {reachEntries.map(([hash, w]) => (
+            <li key={hash} className="font-mono">
+              {hash}: {w}
+            </li>
+          ))}
+        </ul>
+      </div>
 
       {!address && <p>Please connect your wallet.</p>}
 
