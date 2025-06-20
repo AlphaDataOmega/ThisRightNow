@@ -1,0 +1,12 @@
+[
+  {
+    "inputs": [
+      { "internalType": "bytes32", "name": "postHash", "type": "bytes32" },
+      { "internalType": "uint256", "name": "amount", "type": "uint256" }
+    ],
+    "name": "startBoost",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]
