@@ -174,6 +174,14 @@ export default function Dashboard() {
 
   return (
     <div className="p-6 space-y-4">
+      <nav className="mb-4 space-x-4">
+        <a href="/dashboard" className="text-blue-600 underline">
+          Dashboard
+        </a>
+        <a href="/earnings" className="text-blue-600 underline">
+          Earnings
+        </a>
+      </nav>
       <h1 className="text-2xl font-bold">TRN Earnings Dashboard</h1>
       <div className="text-sm">
         <strong>Top Retrned Posts (trust-weighted):</strong>
