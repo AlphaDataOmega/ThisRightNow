@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
+import { parseEther } from "ethers";
 import { MerkleTree } from "merkletreejs";
 import keccak256 from "keccak256";
 
@@ -13,7 +14,7 @@ function buildMerkleTree(claims: Claim[]) {
   const proofs: Record<string, string[]> = {};
   for (const c of claims) {
     const leaf = ethers.solidityPackedKeccak256(["address", "uint256"], [c.address, c.amount]);
-    proofs[c.address] = tree.getHexProof(leaf);
+    proofs[c.address.toLowerCase()] = tree.getHexProof(leaf);
   }
   return { root: tree.getHexRoot(), proofs };
 }
@@ -38,9 +39,9 @@ describe("E2E TRN View Claim", function () {
     vault = await Vault.deploy(oracle.target);
 
     claims = [
-      { address: viewer1.address, amount: ethers.parseEther("10") },
-      { address: viewer2.address, amount: ethers.parseEther("15") },
-      { address: viewer3.address, amount: ethers.parseEther("20") },
+      { address: viewer1.address, amount: parseEther("10") },
+      { address: viewer2.address, amount: parseEther("15") },
+      { address: viewer3.address, amount: parseEther("20") },
     ];
 
     ({ root, proofs } = buildMerkleTree(claims));
@@ -54,10 +55,9 @@ describe("E2E TRN View Claim", function () {
   });
 
   it("should allow users to claim TRN via Merkle proof and notify Oracle", async () => {
-    const viewers = [viewer1, viewer2, viewer3];
-    for (const [i, viewer] of viewers.entries()) {
-      const claim = claims[i];
-      const proof = proofs[claim.address];
+    for (const claim of claims) {
+      const viewer = [viewer1, viewer2, viewer3].find(v => v.address === claim.address)!;
+      const proof = proofs[claim.address.toLowerCase()];
       await distributor.connect(viewer).claim(claim.address, claim.amount, proof);
       const earned = await oracle.earnedTRN(claim.address);
       expect(earned).to.equal(claim.amount);
