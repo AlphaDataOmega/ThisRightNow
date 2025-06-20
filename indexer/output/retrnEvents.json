@@ -1,0 +1,7 @@
+[
+  { "postHash": "0xabc123", "retrnr": "0xuser1", "timestamp": 1718700300 },
+  { "postHash": "0xdef456", "retrnr": "0xbot44", "timestamp": 1718700310 },
+  { "postHash": "0xabc123", "retrnr": "0xsemanticaI", "timestamp": 1718700320 },
+  { "postHash": "0xghi789", "retrnr": "0xuser1", "timestamp": 1718700330 },
+  { "postHash": "0xghi789", "retrnr": "0x000000000000000000000000000000000000DA0", "timestamp": 1718700340 }
+]
