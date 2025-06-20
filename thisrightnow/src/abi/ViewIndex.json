@@ -1,0 +1,12 @@
+[
+  {
+    "inputs": [
+      { "internalType": "string", "name": "ipfsHash", "type": "string" },
+      { "internalType": "string", "name": "category", "type": "string" }
+    ],
+    "name": "registerPost",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

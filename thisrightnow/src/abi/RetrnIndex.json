@@ -1,0 +1,12 @@
+[
+  {
+    "inputs": [
+      { "internalType": "address", "name": "user", "type": "address" },
+      { "internalType": "bytes32", "name": "postHash", "type": "bytes32" }
+    ],
+    "name": "logRetrn",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]
