@@ -1,6 +1,8 @@
 import { ethers } from "ethers";
 import { useAccount } from "wagmi";
 import { loadContract } from "@/utils/contract";
+import { flagPost } from "@/utils/flagPost";
+import { appealPost } from "@/utils/appealPost";
 import BurnRegistryABI from "@/abi/BurnRegistry.json";
 import RetrnIndexABI from "@/abi/RetrnIndex.json";
 import BoostingABI from "@/abi/BoostingModule.json";
@@ -11,6 +13,12 @@ const BOOST_MODULE = import.meta.env.VITE_BOOST_MODULE;
 
 export default function PostCard({ post }: { post: any }) {
   const { address } = useAccount();
+  const isAuthor = address?.toLowerCase() === post.creator?.toLowerCase();
+
+  const handleAppeal = async () => {
+    const reason = prompt("Why are you appealing this post’s moderation?");
+    if (reason) await appealPost(post.hash, reason);
+  };
 
   async function bless() {
     alert(`🙏 Blessed ${post.hash}`);
@@ -50,6 +58,12 @@ export default function PostCard({ post }: { post: any }) {
         <button onClick={burn} className="px-2 py-1 bg-red-600 text-white rounded">Burn</button>
         <button onClick={retrn} className="px-2 py-1 bg-yellow-600 text-white rounded">Retrn</button>
         <button onClick={boost} className="px-2 py-1 bg-blue-600 text-white rounded">Boost</button>
+      </div>
+      <div className="mt-2 flex gap-2">
+        <button onClick={() => flagPost(post.hash)}>🚩 Flag</button>
+        {isAuthor && (
+          <button onClick={handleAppeal}>📝 Appeal</button>
+        )}
       </div>
     </div>
   );
