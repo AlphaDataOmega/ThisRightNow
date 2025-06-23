@@ -20,3 +20,8 @@ summarizing boosts or penalties from resolved appeals.
 the retrnr's trust score. The resulting reach numbers are saved to
 `indexer/output/trustWeightedRetrns.json` and surfaced in the frontend for quick
 reference.
+
+## Documentation
+
+More details about how the app works, token flows and developer setup can be
+found in [docs/README.md](docs/README.md).
